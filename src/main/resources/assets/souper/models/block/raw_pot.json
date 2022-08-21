@@ -1,0 +1,8 @@
+{
+  "parent": "souper:block/pot_template",
+  "textures": {
+    "0": "minecraft:block/clay",
+    "1": "minecraft:block/oak_planks",
+    "particle": "minecraft:block/clay"
+  }
+}

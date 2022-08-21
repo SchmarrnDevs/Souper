@@ -1,0 +1,60 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "souper:block/pot"
+      }
+    },
+    {
+      "when": {
+        "water": "3"
+      },
+      "apply": {
+        "model": "souper:block/pot3"
+      }
+    },
+    {
+      "when": {
+        "water": "2"
+      },
+      "apply": {
+        "model": "souper:block/pot2"
+      }
+    },
+    {
+      "when": {
+        "water": "1"
+      },
+      "apply": {
+        "model": "souper:block/pot1"
+      }
+    },
+    {
+      "when": {
+        "stuff": "true",
+        "water": "3"
+      },
+      "apply": {
+        "model": "souper:block/pot_stuff3"
+      }
+    },
+    {
+      "when": {
+        "stuff": "true",
+        "water": "2"
+      },
+      "apply": {
+        "model": "souper:block/pot_stuff2"
+      }
+    },
+    {
+      "when": {
+        "stuff": "true",
+        "water": "1"
+      },
+      "apply": {
+        "model": "souper:block/pot_stuff1"
+      }
+    }
+  ]
+}

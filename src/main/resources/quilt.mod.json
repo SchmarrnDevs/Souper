@@ -1,0 +1,40 @@
+{
+	"schema_version": 1,
+	"quilt_loader": {
+		"group": "dev.schmarrn",
+		"id": "souper",
+		"version": "${version}",
+		"metadata": {
+			"name": "Souper",
+			"description": "Let's cook some soup!",
+			"contributors": {
+				"Andreas Kohler": "Owner"
+			},
+			"contact": {
+				"homepage": "https://schmarrn.dev/",
+				"issues": "https://github.com/SchmarrnDevs/Souper/issues",
+				"sources": "https://github.com/SchmarrnDevs/Souper"
+			},
+			"icon": "assets/souper/icon.png"
+		},
+		"intermediate_mappings": "net.fabricmc:intermediary",
+		"entrypoints": {
+			"init": "dev.schmarrn.souper.Souper",
+			"client_init": "dev.schmarrn.souper.SouperClient"
+		},
+		"depends": [
+			{
+				"id": "quilt_loader",
+				"versions": ">=0.17.0-"
+			},
+			{
+				"id": "quilted_fabric_api",
+				"versions": ">=4.0.0-"
+			},
+			{
+				"id": "minecraft",
+				"versions": ">=1.19.2"
+			}
+		]
+	}
+}

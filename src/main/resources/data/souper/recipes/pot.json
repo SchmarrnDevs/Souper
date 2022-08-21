@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:smelting",
+  "ingredient": {
+    "item": "souper:raw_pot"
+  },
+  "experience": 0.35,
+  "result": "souper:pot"
+}
+

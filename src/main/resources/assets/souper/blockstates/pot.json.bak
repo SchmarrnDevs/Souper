@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "water=0": {
+      "model": "souper:block/pot"
+    },
+    "water=1": {
+      "model": "souper:block/pot1"
+    },
+    "water=2": {
+      "model": "souper:block/pot2"
+    },
+    "water=3": {
+      "model": "souper:block/pot3"
+    }
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "item.souper.carrot_soup": "Carrot Soup",
+  "item.souper.potato_soup": "Potato Soup",
+  "item.souper.dragon_soup": "Dragon Soup",
+  "item.souper.shroom_soup": "Mushroom Soup",
+  "item.souper.beetroot_soup": "Beetroot Soup",
+  "item.souper.apple_sauce": "Apple Sauce",
+  "item.souper.chicken_soup": "Chicken Soup",
+  "item.souper.special_air_soup": "Special Air Soup",
+  "item.souper.rindsgulasch": "Beef Goulash",
+  "item.souper.schweinsgulasch": "Pork Goulash",
+  "block.souper.raw_pot": "Unfired Pot",
+  "block.souper.pot": "Pot",
+  "itemGroup.souper.souper": "Souper"
+}
