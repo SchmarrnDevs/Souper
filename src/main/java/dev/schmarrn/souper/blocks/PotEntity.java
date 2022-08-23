@@ -109,7 +109,7 @@ public class PotEntity extends BlockEntity {
 		if (ingredient instanceof SoupItem soup) {
 			return soup.getColor();
 		} else {
-			return 0;
+			return 0xFFFFFF;
 		}
 	}
 
@@ -143,46 +143,45 @@ public class PotEntity extends BlockEntity {
 	}
 
 	public static void tick(World world, BlockPos blockPos, BlockState blockState, BlockEntity blockEntity) {
-		PotEntity entity = (PotEntity) blockEntity;
-		if (entity == null) return;
+		if (blockEntity instanceof PotEntity entity) {
+			if (entity.getState() == COOKING) {
+				Block below = world.getBlockState(blockPos.down()).getBlock();
+				if (below.equals(Blocks.FURNACE) || below.equals(Blocks.SMOKER) || below.equals(Blocks.BLAST_FURNACE)) {
+					boolean furnaceIsLit = world.getBlockState(blockPos.down()).get(AbstractFurnaceBlock.LIT);
 
-		if (entity.getState() == COOKING) {
-			Block below = world.getBlockState(blockPos.down()).getBlock();
-			if (below.equals(Blocks.FURNACE) || below.equals(Blocks.SMOKER) || below.equals(Blocks.BLAST_FURNACE)) {
-				boolean furnaceIsLit = world.getBlockState(blockPos.down()).get(AbstractFurnaceBlock.LIT);
+					if (furnaceIsLit) {
+						if (world.isClient) {
+							double rand = world.getRandom().nextDouble();
+							if (rand > 0.5) return;
 
-				if (furnaceIsLit) {
-					if (world.isClient) {
-						double rand = world.getRandom().nextDouble();
-						if (rand > 0.5) return;
+							int colorDone = entity.getTargetColor();
+							// Not so horrible but still pretty terrible interpolated color
+							int dr = ((colorDone & 0xFF0000) >> 16) - ((COLOR_NORMAL & 0xFF0000) >> 16);
+							int dg = ((colorDone & 0x00FF00) >> 8) - ((COLOR_NORMAL & 0x00FF00) >> 8);
+							int db = (colorDone & 0xFF) - (COLOR_NORMAL & 0xFF);
 
-						int colorDone = entity.getTargetColor();
-						// Not so horrible but still pretty terrible interpolated color
-						int dr = ((colorDone & 0xFF0000) >> 16) - ((COLOR_NORMAL & 0xFF0000) >> 16);
-						int dg = ((colorDone & 0x00FF00) >> 8) - ((COLOR_NORMAL & 0x00FF00) >> 8);
-						int db = (colorDone & 0xFF) - (COLOR_NORMAL & 0xFF);
+							int r = ((int)((float) dr / 400f * (float)entity.tick + ((COLOR_NORMAL & 0xFF0000) >> 16)) & 0xFF);
+							int g = ((int)((float) dg / 400f * (float)entity.tick + ((COLOR_NORMAL & 0xFF00) >> 8)) & 0xFF);
+							int b = (int)((float) db / 400f * (float)entity.tick + (COLOR_NORMAL & 0xFF)) & 0xFF;
 
-						int r = ((int)((float) dr / 400f * (float)entity.tick + ((COLOR_NORMAL & 0xFF0000) >> 16)) & 0xFF);
-						int g = ((int)((float) dg / 400f * (float)entity.tick + ((COLOR_NORMAL & 0xFF00) >> 8)) & 0xFF);
-						int b = (int)((float) db / 400f * (float)entity.tick + (COLOR_NORMAL & 0xFF)) & 0xFF;
+							world.addParticle(ParticleTypes.ENTITY_EFFECT, blockPos.getX() + 0.25 + rand/2, blockPos.getY()+0.15, blockPos.getZ() + 0.25 + rand/2, r / 255f, g / 255f, b / 255f);
+						} else {
+							entity.tick++;
 
-						world.addParticle(ParticleTypes.ENTITY_EFFECT, blockPos.getX() + 0.25 + rand/2, blockPos.getY()+0.15, blockPos.getZ() + 0.25 + rand/2, r / 255f, g / 255f, b / 255f);
-					} else {
-						entity.tick++;
+							// You need to smelt 2 items for the soup to be cooked
+							if (entity.tick >= 400) {
+								entity.tick = 0;
+								entity.setState(DONE);
+							}
 
-						// You need to smelt 2 items for the soup to be cooked
-						if (entity.tick >= 400) {
-							entity.tick = 0;
-							entity.setState(DONE);
+							entity.markDirty();
 						}
-
-						entity.markDirty();
-					}
-				} else {
-					// If furnace is not lit and soup is not done, decrement ticks again
-					if (!world.isClient && entity.tick > 0) {
-						entity.tick--;
-						entity.markDirty();
+					} else {
+						// If furnace is not lit and soup is not done, decrement ticks again
+						if (!world.isClient && entity.tick > 0) {
+							entity.tick--;
+							entity.markDirty();
+						}
 					}
 				}
 			}

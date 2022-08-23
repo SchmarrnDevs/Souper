@@ -61,11 +61,12 @@ public class SoupItem extends Item {
 
 	@Override
 	public ItemStack finishUsing(ItemStack stack, World world, LivingEntity user) {
-		SoupItem item = (SoupItem) stack.getItem();
 		ItemStack itemStack = super.finishUsing(stack, world, user);
 
-		if (user instanceof PlayerEntity && item.isInfinite) {
-			return new ItemStack(item);
+		if (stack.getItem() instanceof SoupItem item) {
+			if (user instanceof PlayerEntity && item.isInfinite) {
+				return new ItemStack(item);
+			}
 		}
 
 		return user instanceof PlayerEntity && (((PlayerEntity)user).getAbilities().creativeMode) ? itemStack : new ItemStack(Items.BOWL);

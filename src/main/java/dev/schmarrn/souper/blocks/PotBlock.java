@@ -91,79 +91,76 @@ public class PotBlock extends BlockWithEntity implements BlockEntityProvider {
 
 		Item inMainHand = player.getMainHandStack().getItem();
 
-		PotEntity entity = (PotEntity) world.getBlockEntity(pos);
-		if (entity == null) {
-			return ActionResult.PASS;
-		}
-
-		switch (entity.getState()) {
-			case PotEntity.EMPTY -> {
-				if (inMainHand.equals(Items.WATER_BUCKET)) {
-					if (world.isClient) return ActionResult.SUCCESS;
-
-					int slot = player.getInventory().selectedSlot;
-					player.getInventory().setStack(slot, new ItemStack(Items.BUCKET));
-					world.setBlockState(pos, state.with(WATER, 3));
-
-					entity.setState(PotEntity.READY);
-
-					return ActionResult.SUCCESS;
-				}
-			}
-			case PotEntity.READY -> {
-				if (isValidIngredient(inMainHand)) {
-					if (!entity.hasIngredient()) {
+		if (world.getBlockEntity(pos) instanceof PotEntity entity) {
+			switch (entity.getState()) {
+				case PotEntity.EMPTY -> {
+					if (inMainHand.equals(Items.WATER_BUCKET)) {
 						if (world.isClient) return ActionResult.SUCCESS;
 
-						if (Items.CARROT.equals(inMainHand)) {
-							entity.setOutput(SouperItems.CARROT_SOUP);
-						} else if (inMainHand.equals(Items.POTATO)) {
-							entity.setOutput(SouperItems.POTATO_SOUP);
-						} else if (inMainHand.equals(Items.BROWN_MUSHROOM) || inMainHand.equals(Items.RED_MUSHROOM)) {
-							entity.setOutput(SouperItems.SHROOM_SOUP);
-						} else if (inMainHand.equals(Items.DRAGON_EGG) || inMainHand.equals(Items.DRAGON_HEAD)) {
-							entity.setOutput(SouperItems.DRAGON_SOUP);
-						} else if (inMainHand.equals(Items.BEETROOT)) {
-							entity.setOutput(SouperItems.BEETROOT_SOUP);
-						} else if (inMainHand.equals(Items.APPLE)) {
-							entity.setOutput(SouperItems.APPLE_SAUCE);
-						} else if (inMainHand.equals(Items.CHICKEN)) {
-							entity.setOutput(SouperItems.CHICKEN_SOUP);
-						} else if (inMainHand.equals(Items.DRAGON_BREATH)) {
-							entity.setOutput(SouperItems.SPECIAL_AIR_SOUP);
-						} else if (inMainHand.equals(Items.PORKCHOP)) {
-							entity.setOutput(SouperItems.SCHWEINSGULASCH);
-						} else if (inMainHand.equals(Items.BEEF)) {
-							entity.setOutput(SouperItems.RINDSGULASCH);
-						}
-						player.getMainHandStack().decrement(1);
+						int slot = player.getInventory().selectedSlot;
+						player.getInventory().setStack(slot, new ItemStack(Items.BUCKET));
+						world.setBlockState(pos, state.with(WATER, 3));
 
-						entity.setState(PotEntity.COOKING);
-						world.setBlockState(pos, state.with(HAS_STUFF, true));
+						entity.setState(PotEntity.READY);
+
 						return ActionResult.SUCCESS;
-					} else {
-						return ActionResult.PASS;
 					}
 				}
-			}
-			case PotEntity.DONE -> {
-				if (state.get(WATER) != 0 && inMainHand.equals(Items.BOWL)) {
-					if (world.isClient) return ActionResult.SUCCESS;
-					player.getMainHandStack().decrement(1);
+				case PotEntity.READY -> {
+					if (isValidIngredient(inMainHand)) {
+						if (!entity.hasIngredient()) {
+							if (world.isClient) return ActionResult.SUCCESS;
 
-					if (!player.getInventory().insertStack(entity.getOneServing())) {
-						player.dropItem(entity.getOneServing(), true);
+							if (Items.CARROT.equals(inMainHand)) {
+								entity.setOutput(SouperItems.CARROT_SOUP);
+							} else if (inMainHand.equals(Items.POTATO)) {
+								entity.setOutput(SouperItems.POTATO_SOUP);
+							} else if (inMainHand.equals(Items.BROWN_MUSHROOM) || inMainHand.equals(Items.RED_MUSHROOM)) {
+								entity.setOutput(SouperItems.SHROOM_SOUP);
+							} else if (inMainHand.equals(Items.DRAGON_EGG) || inMainHand.equals(Items.DRAGON_HEAD)) {
+								entity.setOutput(SouperItems.DRAGON_SOUP);
+							} else if (inMainHand.equals(Items.BEETROOT)) {
+								entity.setOutput(SouperItems.BEETROOT_SOUP);
+							} else if (inMainHand.equals(Items.APPLE)) {
+								entity.setOutput(SouperItems.APPLE_SAUCE);
+							} else if (inMainHand.equals(Items.CHICKEN)) {
+								entity.setOutput(SouperItems.CHICKEN_SOUP);
+							} else if (inMainHand.equals(Items.DRAGON_BREATH)) {
+								entity.setOutput(SouperItems.SPECIAL_AIR_SOUP);
+							} else if (inMainHand.equals(Items.PORKCHOP)) {
+								entity.setOutput(SouperItems.SCHWEINSGULASCH);
+							} else if (inMainHand.equals(Items.BEEF)) {
+								entity.setOutput(SouperItems.RINDSGULASCH);
+							}
+							player.getMainHandStack().decrement(1);
+
+							entity.setState(PotEntity.COOKING);
+							world.setBlockState(pos, state.with(HAS_STUFF, true));
+							return ActionResult.SUCCESS;
+						} else {
+							return ActionResult.PASS;
+						}
 					}
+				}
+				case PotEntity.DONE -> {
+					if (state.get(WATER) != 0 && inMainHand.equals(Items.BOWL)) {
+						if (world.isClient) return ActionResult.SUCCESS;
+						player.getMainHandStack().decrement(1);
 
-					int newWaterLevel = state.get(WATER)-1;
+						if (!player.getInventory().insertStack(entity.getOneServing())) {
+							player.dropItem(entity.getOneServing(), true);
+						}
 
-					if (newWaterLevel == 0) {
-						world.setBlockState(pos, state.with(WATER, newWaterLevel).with(HAS_STUFF, false));
-						entity.clear();
-					} else {
-						world.setBlockState(pos, state.with(WATER, newWaterLevel));
+						int newWaterLevel = state.get(WATER)-1;
+
+						if (newWaterLevel == 0) {
+							world.setBlockState(pos, state.with(WATER, newWaterLevel).with(HAS_STUFF, false));
+							entity.clear();
+						} else {
+							world.setBlockState(pos, state.with(WATER, newWaterLevel));
+						}
+						return ActionResult.SUCCESS;
 					}
-					return ActionResult.SUCCESS;
 				}
 			}
 		}

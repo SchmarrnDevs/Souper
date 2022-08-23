@@ -32,33 +32,33 @@ public class SouperClient implements ClientModInitializer {
 	@Override
 	public void onInitializeClient(ModContainer mod) {
 		ColorProviderRegistry.BLOCK.register((blockState, blockRenderView, blockPos, i) -> {
-			assert blockRenderView != null;
-			PotEntity entity = (PotEntity) blockRenderView.getBlockEntity(blockPos);
-			if (entity == null) return 0;
+			Souper.LOGGER.info("WHY THE FUCK SODIUM IS THIS NOT A POTENTITY - FUCK YOU: {}", blockRenderView.getBlockEntity(blockPos));
+			if (blockRenderView != null && blockRenderView.getBlockEntity(blockPos) instanceof PotEntity entity) {
+				if (i == 1) return entity.getTargetColor();
 
-			if (i == 1) return entity.getTargetColor();
+				switch (entity.getState()) {
+					case PotEntity.COOKING -> {
+						int colorDone = entity.getTargetColor();
+						// Not so horrible but still pretty terrible interpolated color
+						int dr = ((colorDone & 0xFF0000) >> 16) - ((COLOR_NORMAL & 0xFF0000) >> 16);
+						int dg = ((colorDone & 0x00FF00) >> 8) - ((COLOR_NORMAL & 0x00FF00) >> 8);
+						int db = (colorDone & 0xFF) - (COLOR_NORMAL & 0xFF);
 
-			switch (entity.getState()) {
-				case PotEntity.COOKING -> {
-					int colorDone = entity.getTargetColor();
-					// Not so horrible but still pretty terrible interpolated color
-					int dr = ((colorDone & 0xFF0000) >> 16) - ((COLOR_NORMAL & 0xFF0000) >> 16);
-					int dg = ((colorDone & 0x00FF00) >> 8) - ((COLOR_NORMAL & 0x00FF00) >> 8);
-					int db = (colorDone & 0xFF) - (COLOR_NORMAL & 0xFF);
+						int col = (((int)((float) dr / 400f * (float)entity.getTick() + ((COLOR_NORMAL & 0xFF0000) >> 16)) & 0xFF) << 16)
+								| (((int)((float) dg / 400f * (float)entity.getTick() + ((COLOR_NORMAL & 0xFF00) >> 8)) & 0xFF) << 8)
+								| (int)((float) db / 400f * (float)entity.getTick() + (COLOR_NORMAL & 0xFF)) & 0xFF;
 
-					int col = (((int)((float) dr / 400f * (float)entity.getTick() + ((COLOR_NORMAL & 0xFF0000) >> 16)) & 0xFF) << 16)
-							| (((int)((float) dg / 400f * (float)entity.getTick() + ((COLOR_NORMAL & 0xFF00) >> 8)) & 0xFF) << 8)
-							| (int)((float) db / 400f * (float)entity.getTick() + (COLOR_NORMAL & 0xFF)) & 0xFF;
-
-					return col;
-				}
-				case PotEntity.DONE -> {
-					return entity.getTargetColor();
-				}
-				case PotEntity.EMPTY, PotEntity.READY -> {
-					return COLOR_NORMAL;
+						return col;
+					}
+					case PotEntity.DONE -> {
+						return entity.getTargetColor();
+					}
+					case PotEntity.EMPTY, PotEntity.READY -> {
+						return COLOR_NORMAL;
+					}
 				}
 			}
+
 			return 0xFFFFFF;
 		}, SouperBlocks.POT);
 
