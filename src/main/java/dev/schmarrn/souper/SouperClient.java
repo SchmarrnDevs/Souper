@@ -32,7 +32,9 @@ public class SouperClient implements ClientModInitializer {
 	@Override
 	public void onInitializeClient(ModContainer mod) {
 		ColorProviderRegistry.BLOCK.register((blockState, blockRenderView, blockPos, i) -> {
-			Souper.LOGGER.info("WHY THE FUCK SODIUM IS THIS NOT A POTENTITY - FUCK YOU: {}", blockRenderView.getBlockEntity(blockPos));
+			// Totally not embarrasing that I forgot to remove this - I love you sodium devs, don't worry, this was just an
+			// WHAT THE ACTUAL F - moment
+			// Souper.LOGGER.info("WHY THE FUCK SODIUM IS THIS NOT A POTENTITY - FUCK YOU: {}", blockRenderView.getBlockEntity(blockPos));
 			if (blockRenderView != null && blockRenderView.getBlockEntity(blockPos) instanceof PotEntity entity) {
 				if (i == 1) return entity.getTargetColor();
 
