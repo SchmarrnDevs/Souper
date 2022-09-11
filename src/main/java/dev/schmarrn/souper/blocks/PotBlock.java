@@ -25,9 +25,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvent;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateManager;
 import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.IntProperty;
@@ -98,7 +95,9 @@ public class PotBlock extends BlockWithEntity implements BlockEntityProvider {
 						if (world.isClient) return ActionResult.SUCCESS;
 
 						int slot = player.getInventory().selectedSlot;
-						player.getInventory().setStack(slot, new ItemStack(Items.BUCKET));
+						if (!player.getAbilities().creativeMode) {
+							player.getInventory().setStack(slot, new ItemStack(Items.BUCKET));
+						}
 						world.setBlockState(pos, state.with(WATER, 3));
 
 						entity.setState(PotEntity.READY);
@@ -145,7 +144,9 @@ public class PotBlock extends BlockWithEntity implements BlockEntityProvider {
 				case PotEntity.DONE -> {
 					if (state.get(WATER) != 0 && inMainHand.equals(Items.BOWL)) {
 						if (world.isClient) return ActionResult.SUCCESS;
-						player.getMainHandStack().decrement(1);
+						if (!player.getAbilities().creativeMode) {
+							player.getMainHandStack().decrement(1);
+						}
 
 						if (!player.getInventory().insertStack(entity.getOneServing())) {
 							player.dropItem(entity.getOneServing(), true);
