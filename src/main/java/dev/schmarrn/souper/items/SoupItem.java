@@ -36,7 +36,7 @@ public class SoupItem extends Item {
 						.hunger(hunger)
 						.build()
 				)
-				.maxDamage(1)
+				.maxCount(1)
 		);
 		this.color = color;
 		this.isInfinite = isInfinite;
@@ -63,10 +63,8 @@ public class SoupItem extends Item {
 	public ItemStack finishUsing(ItemStack stack, World world, LivingEntity user) {
 		ItemStack itemStack = super.finishUsing(stack, world, user);
 
-		if (stack.getItem() instanceof SoupItem item) {
-			if (user instanceof PlayerEntity && item.isInfinite) {
-				return new ItemStack(item);
-			}
+		if (user instanceof PlayerEntity && this.isInfinite) {
+			return new ItemStack(this);
 		}
 
 		return user instanceof PlayerEntity && (((PlayerEntity)user).getAbilities().creativeMode) ? itemStack : new ItemStack(Items.BOWL);
